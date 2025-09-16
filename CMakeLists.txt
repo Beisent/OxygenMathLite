@@ -1,0 +1,6 @@
+﻿cmake_minimum_required(VERSION 3.10)
+project(OxyMathLite)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+set(TESTS_DIR ${CMAKE_SOURCE_DIR}/tests)
+file(GLOB SOURCES "src/*.cpp" "${TESTS_DIR}/*.cpp")
+add_executable(OxyMathLite ${SOURCES})
