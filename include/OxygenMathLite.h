@@ -196,4 +196,157 @@ namespace OxygenMathLite
         return vec * scalar;
     }
 
+    struct Vec3
+    {
+        real x = 0.0f;
+        real y = 0.0f;
+        real z = 0.0f;
+
+        // ========== 构造函数 ==========
+        constexpr Vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+        constexpr Vec3(real x, real y, real z) : x(x), y(y), z(z) {}
+        constexpr Vec3(const Vec3 &other) : x(other.x), y(other.y), z(other.z) {}
+        constexpr Vec3(Vec3 &&other) : x(other.x), y(other.y), z(other.z) {}
+
+        Vec3 &operator=(const Vec3 &other)
+        {
+            x = other.x;
+            y = other.y;
+            z = other.z;
+            return *this;
+        }
+        Vec3 &operator=(Vec3 &&other)
+        {
+            x = other.x;
+            y = other.y;
+            z = other.z;
+            return *this;
+        }
+        ~Vec3() = default;
+
+        // ========== 静态工厂方法 ==========
+        static Vec3 Zero() { return {0.0f, 0.0f, 0.0f}; }
+        static Vec3 One() { return {1.0f, 1.0f, 1.0f}; }
+        static Vec3 Up() { return {0.0f, 1.0f, 0.0f}; }
+        static Vec3 Down() { return {0.0f, -1.0f, 0.0f}; }
+        static Vec3 Left() { return {-1.0f, 0.0f, 0.0f}; }
+        static Vec3 Right() { return {1.0f, 0.0f, 0.0f}; }
+        static Vec3 Forward() { return {0.0f, 0.0f, 1.0f}; }
+        static Vec3 Backward() { return {0.0f, 0.0f, -1.0f}; }
+
+        // ========== 运算符重载 ==========
+        Vec3 operator+(const Vec3 &other) const { return {x + other.x, y + other.y, z + other.z}; }
+        Vec3 operator-(const Vec3 &other) const { return {x - other.x, y - other.y, z - other.z}; }
+        Vec3 operator*(real scalar) const { return {x * scalar, y * scalar, z * scalar}; }
+        Vec3 operator/(real scalar) const { return {x / scalar, y / scalar, z / scalar}; }
+        Vec3 operator-() const { return {-x, -y, -z}; }
+        inline bool operator==(const Vec3 &other) const { return x == other.x && y == other.y && z == other.z; }
+        inline bool operator!=(const Vec3 &other) const { return !(*this == other); }
+        Vec3 &operator+=(const Vec3 &other)
+        {
+            x += other.x;
+            y += other.y;
+            z += other.z;
+            return *this;
+        }
+        Vec3 &operator-=(const Vec3 &other)
+        {
+            x -= other.x;
+            y -= other.y;
+            z -= other.z;
+            return *this;
+        }
+        Vec3 &operator*=(real scalar)
+        {
+            x *= scalar;
+            y *= scalar;
+            z *= scalar;
+            return *this;
+        }
+        Vec3 &operator/=(real scalar)
+        {
+            x /= scalar;
+            y /= scalar;
+            z /= scalar;
+            return *this;
+        }
+        // ========== 数学函数 ==========
+        real length() const
+        {
+            return std::sqrt(x * x + y * y + z * z);
+        }
+        real lengthSquared() const
+        {
+            return x * x + y * y + z * z;
+        }
+        Vec3 normalize() const
+        {
+            real len = length();
+            if (len < Constants::Epsilon)
+                return {0, 0, 0};
+            return {x / len, y / len, z / len};
+        }
+        void normalizeSelf()
+        {
+            real len = length();
+            if (len < Constants::Epsilon)
+            {
+                x = y = z = 0;
+                return;
+            }
+            x /= len;
+            y /= len;
+            z /= len;
+        }
+        inline real dot(const Vec3 &other) const { return x * other.x + y * other.y + z * other.z; }
+        Vec3 cross(const Vec3 &other) const
+        {
+            return {
+                y * other.z - z * other.y,
+                z * other.x - x * other.z,
+                x * other.y - y * other.x};
+        }
+        Vec3 reflect(const Vec3 &normal) const
+        {
+            Vec3 n = normal.normalize();
+            return *this - 2 * this->dot(n) * n;
+        }
+        Vec3 project(const Vec3 &other) const
+        {
+            real len = other.length();
+            if (len < Constants::Epsilon)
+                return {0, 0, 0};
+            return {other.x / len, other.y / len, other.z / len};
+        }
+        void clear()
+        {
+            x = 0;
+            y = 0;
+            z = 0;
+        }
+        // ========== 判断函数 ==========
+        inline bool isZero() const { return x == 0 && y == 0 && z == 0; }
+        inline bool isUnit() const { return lengthSquared() - 1 < Constants::Epsilon; }
+        // ========== 输出支持 ==========
+        friend std::ostream &operator<<(std::ostream &os, const Vec3 &vec)
+        {
+            std::ostringstream x_stream, y_stream, z_stream;
+            x_stream << vec.x;
+            y_stream << vec.y;
+            z_stream << vec.z;
+
+            size_t x_length = x_stream.str().length();
+            size_t y_length = y_stream.str().length();
+            size_t z_length = z_stream.str().length();
+            size_t max_length = std::max(std::max(x_length, y_length), z_length);
+            size_t width = max_length + 3;
+            os << "[" << std::setw(width) << vec.x << "," << std::setw(width) << vec.y << "," << std::setw(width) << vec.z << "]";
+            return os;
+        }
+    };
+    inline Vec3 operator*(real scalar, const Vec3 &vec)
+    {
+        return vec * scalar;
+    }
+
 }
