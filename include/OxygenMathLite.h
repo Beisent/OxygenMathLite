@@ -92,6 +92,19 @@ namespace OxygenMathLite
             t = MathTools::Clamp(t, 0, 1);
             return a + ab * t;
         }
+        inline real DistancePointToLine(const Vec2 &a, const Vec2 &b, const Vec2 &p)
+        {
+            Vec2 ab = b - a;
+            Vec2 ap = p - a;
+
+            real crossProduct = std::abs(ab.cross(ap));
+            real lineLength = ab.length();
+            if (lineLength < Constants::Epsilon)
+            {
+                return ap.length();
+            }
+            return crossProduct / lineLength;
+        }
     }
 
     namespace Integration2D
