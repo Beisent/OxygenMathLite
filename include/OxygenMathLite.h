@@ -393,6 +393,16 @@ namespace OxygenMathLite
         real m00 = 1, m01 = 0, m10 = 0, m11 = 1;
         Mat2() = default;
         Mat2(real a, real b, real c, real d) : m00(a), m01(b), m10(c), m11(d) {}
+        static Mat2 ZERO()
+        {
+            return Mat2(0, 0, 0, 0);
+        }
+        static Mat2 Identity()
+        {
+            return Mat2(1, 0, 0, 1);
+        }
+        static Mat2 Scale(real x, real y) { return Mat2(x, 0, 0, y); }
+
         Vec2 operator*(const Vec2 &v) const { return {m00 * v.x + m01 * v.y, m10 * v.x + m11 * v.y}; }
         Mat2 operator*(const Mat2 &o) const { return {m00 * o.m00 + m01 * o.m10, m00 * o.m01 + m01 * o.m11, m10 * o.m00 + m11 * o.m10, m10 * o.m01 + m11 * o.m11}; }
         static Mat2 Rotation(real rads)
